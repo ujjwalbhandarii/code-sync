@@ -4,8 +4,9 @@
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "concurrently \"bun run dev:web\"",
-    "dev:web": "cd web && ng serve"
+    "dev": "concurrently \"bun run dev:web\" \"bun run dev:server\"",
+    "dev:web": "cd web && ng serve",
+    "dev:server": "cd server && bun dev"
   },
   "keywords": [],
   "author": "",
