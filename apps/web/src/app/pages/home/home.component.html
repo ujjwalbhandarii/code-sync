@@ -1,15 +1,10 @@
-<style>
-  .editor {
-    height: 80% !important;
-    width: 100%;
-  }
-</style>
-
-<div class="bg-slate-700 h-screen">
-  <nu-monaco-editor
-    [(ngModel)]="value"
-    [options]="editorOptions"
-    (ngModelChange)="onValueChange($event)"
-    class="editor"
-  ></nu-monaco-editor>
-</div>
+<section class="bg-slate-700 h-screen">
+  <app-monaco-editor
+    [height]="'80%'"
+    [width]="'100%'"
+    [theme]="'vs-dark'"
+    [(value)]="editorValue"
+    [language]="'typescript'"
+    (valueChange)="onValueChange($event)"
+  ></app-monaco-editor>
+</section>

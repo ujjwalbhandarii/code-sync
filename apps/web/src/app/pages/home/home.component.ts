@@ -1,32 +1,18 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-import { NuMonacoEditorModule } from '@ng-util/monaco-editor';
+import { MonacoEditorComponent } from '@/app/shared/components/monaco-editor/monaco-editor.component';
 
 @Component({
   standalone: true,
   selector: 'app-home',
   templateUrl: './home.component.html',
-  imports: [NuMonacoEditorModule, CommonModule, FormsModule],
+  imports: [CommonModule, MonacoEditorComponent],
 })
 export class HomeComponent {
-  value: string = 'const a = 1;';
-
-  editorOptions: monaco.editor.IStandaloneEditorConstructionOptions = {
-    theme: 'vs-dark',
-    language: 'typescript',
-    fontSize: 16,
-    wordWrap: 'on',
-    minimap: { enabled: true },
-    tabSize: 4,
-    padding: {
-      top: 20,
-      bottom: 20,
-    },
-  };
+  editorValue: string = 'const a = 1;';
 
   onValueChange(newValue: string) {
-    this.value = newValue;
+    console.log('New value:', newValue);
   }
 }
