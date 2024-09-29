@@ -1,12 +1,18 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+import { MonacoEditorComponent } from '@/app/shared/components/monaco-editor/monaco-editor.component';
 
 @Component({
-  selector: 'app-home',
   standalone: true,
-  imports: [],
+  selector: 'app-home',
   templateUrl: './home.component.html',
-  styles: ``
+  imports: [CommonModule, MonacoEditorComponent],
 })
 export class HomeComponent {
+  editorValue: string = 'const a = 1;';
 
+  onValueChange(newValue: string) {
+    console.log('New value:', newValue);
+  }
 }
