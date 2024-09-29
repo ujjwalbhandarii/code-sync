@@ -9,8 +9,8 @@ config();
 app.use(
   cors({
     origin: "*",
-    allowedHeaders: "*",
     credentials: true,
+    allowedHeaders: "*",
   })
 );
 app.use(express.json());
