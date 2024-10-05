@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "concurrently \"bun run dev:api\" \"bun run dev:web\"",
-    "dev:web": "cd apps/web && bun run dev",
+    "dev:web": "cd apps/web && ng serve",
     "dev:api": "cd apps/server && bun run dev",
     "install:all": "bun install && bun install:web && bun install:api",
     "install:web": "cd apps/web && bun install",
