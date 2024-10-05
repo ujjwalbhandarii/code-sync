@@ -6,6 +6,8 @@ import {
   OnInit,
   Inject,
   PLATFORM_ID,
+  OnChanges,
+  SimpleChanges,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
@@ -44,7 +46,7 @@ import { NuMonacoEditorModule } from '@ng-util/monaco-editor';
     `,
   ],
 })
-export class MonacoEditorComponent implements OnInit {
+export class MonacoEditorComponent implements OnInit, OnChanges {
   @Input() value: string = '';
   @Input() width: string = '100%';
   @Input() height: string = '100%';
@@ -55,6 +57,7 @@ export class MonacoEditorComponent implements OnInit {
   editorValue: string = '';
   containerStyle: { [key: string]: string } = {};
   editorOptions: editor.IStandaloneEditorConstructionOptions | undefined;
+  private isInternalChange = false;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
@@ -81,7 +84,20 @@ export class MonacoEditorComponent implements OnInit {
     }
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['value'] && !changes['value'].firstChange) {
+      const newValue = changes['value'].currentValue;
+      if (newValue !== this.editorValue && !this.isInternalChange) {
+        this.editorValue = newValue;
+      }
+    }
+  }
+
   onValueChange(newValue: string) {
+    this.isInternalChange = true;
     this.valueChange.emit(newValue);
+    setTimeout(() => {
+      this.isInternalChange = false;
+    }, 0);
   }
 }
