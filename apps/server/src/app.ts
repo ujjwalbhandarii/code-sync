@@ -31,7 +31,7 @@ function getAllConnectedClients(roomId: string) {
   );
 }
 
-io.on("connection", (socket: Socket) => {
+io.on(ACTIONS.CONNECTION, (socket: Socket) => {
   socket.on(ACTIONS.JOIN, ({ roomId, username }) => {
     userSocketMap[socket.id] = username;
     socket.join(roomId);
@@ -52,7 +52,7 @@ io.on("connection", (socket: Socket) => {
     socket.to(roomId).emit(ACTIONS.CODE_CHANGE, { code });
   });
 
-  socket.on("disconnecting", () => {
+  socket.on(ACTIONS.DISCONNECTING, () => {
     const rooms = Array.from(socket.rooms).filter((room) => room !== socket.id);
 
     rooms.forEach((roomId) => {
@@ -63,7 +63,7 @@ io.on("connection", (socket: Socket) => {
     });
   });
 
-  socket.on("disconnect", () => {
+  socket.on(ACTIONS.DISCONNECT, () => {
     delete userSocketMap[socket.id];
   });
 });

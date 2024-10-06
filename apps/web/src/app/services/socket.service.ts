@@ -1,14 +1,17 @@
 import { Observable } from 'rxjs';
-import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { Socket, SocketIoConfig } from 'ngx-socket-io';
 import { isPlatformBrowser } from '@angular/common';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+
+import { Socket, SocketIoConfig } from 'ngx-socket-io';
 
 export const ACTIONS = {
   JOIN: 'join',
   JOINED: 'joined',
+  CONNECTION: 'connection',
   CODE_CHANGE: 'code-change',
   DISCONNECTING: 'disconnecting',
   DISCONNECTED: 'disconnected',
+  DISCONNECT: 'disconnect',
 };
 
 const config: SocketIoConfig = {
@@ -29,10 +32,12 @@ export class SocketService extends Socket {
     if (isPlatformBrowser(this.platformId)) {
       this.connect();
 
-      this.on('connect', () => {
+      //connect
+      this.on(ACTIONS.CONNECTION, () => {
         console.log('Socket connected with ID:', this.ioSocket.id);
       });
 
+      //connect_error
       this.on('connect_error', (error: Error) => {
         console.error('Socket connection error:', error);
       });
@@ -40,19 +45,16 @@ export class SocketService extends Socket {
   }
 
   joinRoom(roomId: string, username: string) {
-    console.log('Joining room:', roomId, 'as', username);
     this.emit(ACTIONS.JOIN, { roomId, username });
   }
 
   codeChange(roomId: string, code: string) {
-    console.log('Emitting code change for room:', roomId);
     this.emit(ACTIONS.CODE_CHANGE, { roomId, code });
   }
 
   onCodeChange(): Observable<{ code: string }> {
     return new Observable((observer) => {
       this.on(ACTIONS.CODE_CHANGE, (data: { code: string }) => {
-        console.log('Received code change:', data);
         observer.next(data);
       });
     });
@@ -61,7 +63,6 @@ export class SocketService extends Socket {
   onJoined(): Observable<any> {
     return new Observable((observer) => {
       this.on(ACTIONS.JOINED, (data: any) => {
-        console.log('Joined event received:', data);
         observer.next(data);
       });
     });
