@@ -3,7 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Component, Inject, PLATFORM_ID } from '@angular/core';
 
-import { SocketService } from '../services/socket.service';
+import { SocketService } from '@/app/services/socket.service';
 import { MonacoEditorComponent } from '@/app/shared/monaco-editor/monaco-editor.component';
 
 @Component({
@@ -15,8 +15,8 @@ import { MonacoEditorComponent } from '@/app/shared/monaco-editor/monaco-editor.
 export class EditorComponent {
   roomId!: string | null;
   username!: string | null;
-  editorValue: string = 'const apple = 1;';
   private isUpdatingFromServer = false;
+  editorValue: string = 'const apple = 1;';
 
   private codeChangeSubscription?: Subscription;
 
@@ -25,7 +25,7 @@ export class EditorComponent {
     private route: ActivatedRoute,
     private socketService: SocketService,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) { }
+  ) {}
 
   ngOnInit() {
     if (!isPlatformBrowser(this.platformId)) {
@@ -47,10 +47,10 @@ export class EditorComponent {
     this.codeChangeSubscription = this.socketService.onCodeChange().subscribe({
       next: (data) => {
         if (data.code !== undefined) {
-          this.isUpdatingFromServer = true;
-          console.log(data.code);
           this.editorValue = data.code;
-          // Use setTimeout to reset the flag after the update
+          this.isUpdatingFromServer = true;
+
+          // Reset the flag after the update
           setTimeout(() => {
             this.isUpdatingFromServer = false;
           }, 0);
@@ -66,7 +66,6 @@ export class EditorComponent {
     // Only emit changes if they're not from the server
     if (!this.isUpdatingFromServer) {
       this.editorValue = newValue;
-      console.log('Editor value changed locally to:', newValue);
       this.socketService.codeChange(this.roomId!, newValue);
     }
   }
