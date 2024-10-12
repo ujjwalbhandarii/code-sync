@@ -1,9 +1,10 @@
-import { Component, Inject, PLATFORM_ID } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MonacoEditorComponent } from '@/app/shared/monaco-editor/monaco-editor.component';
-import { SocketService } from '../services/socket.service';
-import { isPlatformBrowser } from '@angular/common';
 import { Subscription } from 'rxjs';
+import { isPlatformBrowser } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Component, Inject, PLATFORM_ID } from '@angular/core';
+
+import { SocketService } from '../services/socket.service';
+import { MonacoEditorComponent } from '@/app/shared/monaco-editor/monaco-editor.component';
 
 @Component({
   standalone: true,
@@ -24,14 +25,14 @@ export class EditorComponent {
     private route: ActivatedRoute,
     private socketService: SocketService,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  ) { }
 
   ngOnInit() {
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
 
-    this.route.queryParamMap.subscribe((params) => {
+    this.route.queryParamMap.subscribe((params): void => {
       this.roomId = params.get('roomId');
       this.username = params.get('username');
 

@@ -1,8 +1,9 @@
 import cors from "cors";
 import http from "http";
-import express, { Request, Response } from "express";
 import { config } from "dotenv";
 import { Server, Socket } from "socket.io";
+import express, { Request, Response } from "express";
+
 import { ACTIONS } from "./constants";
 
 config();
@@ -13,22 +14,22 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:4200",
-    methods: ["GET", "POST"],
     credentials: true,
     allowedHeaders: ["*"],
+    methods: ["GET", "POST"],
+    origin: "http://localhost:4200",
   },
 });
 
 const userSocketMap: Record<string, string> = {};
 
 function getAllConnectedClients(roomId: string) {
-  return Array.from(io.sockets.adapter.rooms.get(roomId) || []).map(
-    (socketId) => ({
-      socketId,
-      username: userSocketMap[socketId],
-    })
-  );
+  const clients = io.sockets.adapter.rooms.get(roomId) || [];
+
+  return Array.from(clients).map((socketId) => ({
+    socketId,
+    username: userSocketMap[socketId],
+  }));
 }
 
 io.on(ACTIONS.CONNECTION, (socket: Socket) => {
