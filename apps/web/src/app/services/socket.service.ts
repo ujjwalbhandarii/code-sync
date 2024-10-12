@@ -12,6 +12,7 @@ export const ACTIONS = {
   DISCONNECTING: 'disconnecting',
   DISCONNECTED: 'disconnected',
   DISCONNECT: 'disconnect',
+  MOUSE_MOVE: 'mouse-move',
 };
 
 const config: SocketIoConfig = {
@@ -31,16 +32,6 @@ export class SocketService extends Socket {
 
     if (isPlatformBrowser(this.platformId)) {
       this.connect();
-
-      //connect
-      this.on(ACTIONS.CONNECTION, () => {
-        console.log('Socket connected with ID:', this.ioSocket.id);
-      });
-
-      //connect_error
-      this.on('connect_error', (error: Error) => {
-        console.error('Socket connection error:', error);
-      });
     }
   }
 
@@ -50,6 +41,20 @@ export class SocketService extends Socket {
 
   codeChange(roomId: string, code: string) {
     this.emit(ACTIONS.CODE_CHANGE, { roomId, code });
+  }
+
+  sendMousePosition(roomId: string, x: number, y: number): void {
+    console.log(roomId, x, y);
+    this.emit(ACTIONS.MOUSE_MOVE, { roomId, x, y });
+  }
+
+  onMouseMove(): Observable<{ x: number; y: number; socketId: string }> {
+    return new Observable((observer) => {
+      this.on(ACTIONS.MOUSE_MOVE, (data: any) => {
+        console.log(data);
+        observer.next(data);
+      });
+    });
   }
 
   onCodeChange(): Observable<{ code: string }> {

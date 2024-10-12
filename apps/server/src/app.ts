@@ -53,6 +53,12 @@ io.on(ACTIONS.CONNECTION, (socket: Socket) => {
     socket.to(roomId).emit(ACTIONS.CODE_CHANGE, { code });
   });
 
+  // Broadcast the cursor position to other clients in the same room
+  socket.on(ACTIONS.MOUSE_MOVE, ({ roomId, x, y }) => {
+    console.log(roomId, x, y);
+    socket.to(roomId).emit(ACTIONS.MOUSE_MOVE, { x, y, socketId: socket.id });
+  });
+
   socket.on(ACTIONS.DISCONNECTING, () => {
     const rooms = Array.from(socket.rooms).filter((room) => room !== socket.id);
 

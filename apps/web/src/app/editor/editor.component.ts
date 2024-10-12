@@ -4,13 +4,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Component, Inject, PLATFORM_ID } from '@angular/core';
 
 import { SocketService } from '@/app/services/socket.service';
+import { MouseTrackComponent } from '@/app/shared/mouse-track/mouse-track.component';
 import { MonacoEditorComponent } from '@/app/shared/monaco-editor/monaco-editor.component';
 
 @Component({
   standalone: true,
   selector: 'app-editor',
-  imports: [MonacoEditorComponent],
   templateUrl: './editor.component.html',
+  imports: [MonacoEditorComponent, MouseTrackComponent],
 })
 export class EditorComponent {
   roomId!: string | null;

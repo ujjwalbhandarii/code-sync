@@ -6,4 +6,5 @@ export const ACTIONS = {
   DISCONNECTING: "disconnecting",
   DISCONNECTED: "disconnected",
   DISCONNECT: "disconnect",
+  MOUSE_MOVE: "mouse-move",
 };

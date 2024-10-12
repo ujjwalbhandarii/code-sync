@@ -1,5 +1,8 @@
-import { Injectable } from '@angular/core';
-import { fromEvent, map, Observable } from 'rxjs';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { fromEvent, map, Observable, BehaviorSubject } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { SocketService } from './socket.service';
+import { isPlatformBrowser } from '@angular/common';
 
 type MouseCoordinates = {
   x: number;
@@ -10,24 +13,62 @@ type MouseCoordinates = {
   providedIn: 'root',
 })
 export class CursorTrackingService {
-  constructor() {
-    this.trackCursorMovement();
+  private roomId$ = new BehaviorSubject<string | null>(null);
+  private cursorPosition$!: Observable<MouseCoordinates>;
+
+  constructor(
+    private route: ActivatedRoute,
+    private socketService: SocketService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    if (isPlatformBrowser(this.platformId)) {
+      this.initializeService();
+    }
   }
 
-  private cursorPosition$ = new Observable<MouseCoordinates>();
+  private initializeService(): void {
+    this.route.queryParamMap.subscribe((params) => {
+      const roomId = params.get('roomId');
+      this.roomId$.next(roomId);
+    });
 
-  // Observable that listens to 'mousemove' events on the document
-  private trackCursorMovement(): void {
-    this.cursorPosition$ = fromEvent<MouseEvent>(document, 'mousemove').pipe(
-      map((event: MouseEvent) => ({
-        x: event.clientX,
-        y: event.clientY,
-      }))
+    this.cursorPosition$ = this.trackCursorMovement();
+  }
+
+  private trackCursorMovement(): Observable<MouseCoordinates> {
+    return fromEvent<MouseEvent>(document, 'mousemove').pipe(
+      map((event: MouseEvent) => {
+        const coordinates = { x: event.pageX, y: event.pageY };
+        this.sendCursorPosition(coordinates);
+        return coordinates;
+      })
     );
   }
 
-  // To allow components to subscribe to cursor position updates
+  private sendCursorPosition(coordinates: MouseCoordinates): void {
+    const roomId = this.roomId$.getValue();
+    if (roomId) {
+      this.socketService.sendMousePosition(
+        roomId,
+        coordinates.x,
+        coordinates.y
+      );
+    }
+  }
+
   getCursorPosition(): Observable<MouseCoordinates> {
     return this.cursorPosition$;
+  }
+
+  getOtherUsersCursorPosition(): Observable<{
+    x: number;
+    y: number;
+    socketId: string;
+  }> {
+    return this.socketService.onMouseMove();
+  }
+
+  getRoomId(): Observable<string | null> {
+    return this.roomId$.asObservable();
   }
 }
