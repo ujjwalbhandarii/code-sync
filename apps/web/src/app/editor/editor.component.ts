@@ -1,7 +1,7 @@
 import { Subscription } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Component, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, Inject, NgZone, PLATFORM_ID } from '@angular/core';
 
 import { SocketService } from '@/app/services/socket.service';
 import { MouseTrackComponent } from '@/app/shared/mouse-track/mouse-track.component';
@@ -22,6 +22,7 @@ export class EditorComponent {
   private codeChangeSubscription?: Subscription;
 
   constructor(
+    private ngZone: NgZone,
     private router: Router,
     private route: ActivatedRoute,
     private socketService: SocketService,
@@ -29,10 +30,14 @@ export class EditorComponent {
   ) {}
 
   ngOnInit() {
-    if (!isPlatformBrowser(this.platformId)) {
-      return;
+    if (isPlatformBrowser(this.platformId)) {
+      this.ngZone.runOutsideAngular(() => {
+        this.initializeBrowserSpecificLogic();
+      });
     }
+  }
 
+  private initializeBrowserSpecificLogic() {
     this.route.queryParamMap.subscribe((params): void => {
       this.roomId = params.get('roomId');
       this.username = params.get('username');

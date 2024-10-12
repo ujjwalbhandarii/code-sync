@@ -44,7 +44,6 @@ export class SocketService extends Socket {
   }
 
   sendMousePosition(roomId: string, x: number, y: number): void {
-    console.log(roomId, x, y);
     this.emit(ACTIONS.MOUSE_MOVE, { roomId, x, y });
   }
 

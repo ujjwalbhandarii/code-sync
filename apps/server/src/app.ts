@@ -55,7 +55,6 @@ io.on(ACTIONS.CONNECTION, (socket: Socket) => {
 
   // Broadcast the cursor position to other clients in the same room
   socket.on(ACTIONS.MOUSE_MOVE, ({ roomId, x, y }) => {
-    console.log(roomId, x, y);
     socket.to(roomId).emit(ACTIONS.MOUSE_MOVE, { x, y, socketId: socket.id });
   });
 

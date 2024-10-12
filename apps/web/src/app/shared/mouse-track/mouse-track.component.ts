@@ -28,6 +28,8 @@ import { CursorTrackingService } from '@/app/services/cursor-tracking.service';
     `
       .usermouse {
         position: absolute;
+        filter: invert(1);
+        color: white;
       }
     `,
   ],
