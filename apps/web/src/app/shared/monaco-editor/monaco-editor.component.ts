@@ -14,6 +14,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 
 import type { editor } from 'monaco-editor';
 import { NuMonacoEditorModule } from '@ng-util/monaco-editor';
+import { SocketService } from '@/app/services/socket.service';
 
 @Component({
   selector: 'app-monaco-editor',
@@ -58,11 +59,16 @@ export class MonacoEditorComponent implements OnInit, OnChanges {
   containerStyle: { [key: string]: string } = {};
   editorOptions: editor.IStandaloneEditorConstructionOptions | undefined;
   private isInternalChange = false;
+  private monacoEditorInstance: editor.IStandaloneCodeEditor | undefined; // To store editor instance
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private socketService: SocketService
+  ) {}
 
   ngOnInit() {
     this.editorValue = this.value;
+
     this.containerStyle = {
       height: this.height,
       width: this.width,
@@ -99,5 +105,44 @@ export class MonacoEditorComponent implements OnInit, OnChanges {
     setTimeout(() => {
       this.isInternalChange = false;
     }, 0);
+  }
+
+  // Capture editor instance after initialization
+  onEditorInit(editorInstance: editor.IStandaloneCodeEditor) {
+    this.monacoEditorInstance = editorInstance;
+
+    // Listen for cursor position changes
+    this.monacoEditorInstance.onDidChangeCursorPosition((e) => {
+      const position = this.monacoEditorInstance!.getPosition();
+      if (position) {
+        // Emit cursor position to the server
+        this.socketService.sendCursorPosition({
+          lineNumber: position.lineNumber,
+          column: position.column,
+        });
+      }
+    });
+  }
+
+  // Show remote cursor position
+  showRemoteCursor(position: { lineNumber: number; column: number }) {
+    if (this.monacoEditorInstance) {
+      const decorations = this.monacoEditorInstance.deltaDecorations(
+        [],
+        [
+          {
+            range: new monaco.Range(
+              position.lineNumber,
+              position.column,
+              position.lineNumber,
+              position.column
+            ),
+            options: {
+              className: 'remote-cursor', // Style it to make it visible
+            },
+          },
+        ]
+      );
+    }
   }
 }

@@ -1,5 +1,5 @@
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { fromEvent, map, Observable, BehaviorSubject } from 'rxjs';
+import { fromEvent, map, Observable, BehaviorSubject, EMPTY } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { SocketService } from './socket.service';
 import { isPlatformBrowser } from '@angular/common';
@@ -14,7 +14,7 @@ type MouseCoordinates = {
 })
 export class CursorTrackingService {
   private roomId$ = new BehaviorSubject<string | null>(null);
-  private cursorPosition$!: Observable<MouseCoordinates>;
+  private cursorPosition$: Observable<MouseCoordinates> = EMPTY;
 
   constructor(
     private route: ActivatedRoute,
