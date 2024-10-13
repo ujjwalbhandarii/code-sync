@@ -13,6 +13,7 @@ export const ACTIONS = {
   DISCONNECTED: 'disconnected',
   DISCONNECT: 'disconnect',
   MOUSE_MOVE: 'mouse-move',
+  CURSOR_POITION: 'cursor-position',
 };
 
 const config: SocketIoConfig = {
@@ -41,6 +42,14 @@ export class SocketService extends Socket {
 
   codeChange(roomId: string, code: string) {
     this.emit(ACTIONS.CODE_CHANGE, { roomId, code });
+  }
+
+  sendCursorPosition(position: { lineNumber: number; column: number }) {
+    this.emit(ACTIONS.CURSOR_POITION, position);
+  }
+
+  receiveCursorPosition() {
+    return this.fromEvent(ACTIONS.CURSOR_POITION);
   }
 
   sendMousePosition(roomId: string, x: number, y: number): void {
