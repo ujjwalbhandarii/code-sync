@@ -7,4 +7,5 @@ export const ACTIONS = {
   DISCONNECTED: "disconnected",
   DISCONNECT: "disconnect",
   MOUSE_MOVE: "mouse-move",
+  CURSOR_POITION: "cursor-position",
 };
