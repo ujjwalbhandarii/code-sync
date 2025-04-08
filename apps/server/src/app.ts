@@ -1,17 +1,22 @@
 import cors from "cors";
 import http from "http";
 import { config } from "dotenv";
+import passport from "passport";
 import express, { Request, Response } from "express";
 
+import { passportConfig } from "./utils/config/passport";
 import { CORS_CONFIG } from "./constants/config.constant";
 import { initializeSocketService } from "./services/socket.service";
 
+import AuthRoutes from "./routes/auth.route";
+import { envConfig } from "./utils/config/env.config";
+
 config();
-
-const PORT = process.env.PORT || 9999;
-
 const app = express();
 const server = http.createServer(app);
+
+app.use(passport.initialize());
+passportConfig();
 
 app.use(cors(CORS_CONFIG));
 app.use(express.json());
@@ -20,6 +25,8 @@ initializeSocketService(server);
 
 app.get("/", (_: Request, res: Response) => res.send("Server running..."));
 
-server.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+app.use("/api/auth", AuthRoutes);
+
+server.listen(envConfig.PORT, () => {
+  console.log(`Server running at http://localhost:${envConfig.PORT}`);
 });
