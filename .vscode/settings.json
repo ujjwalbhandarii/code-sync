@@ -1,0 +1,33 @@
+{
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "files.autoSave": "onFocusChange",
+  "editor.indentSize": 2,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.lineNumbers": "on",
+  "editor.matchBrackets": "always",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "prettier.endOfLine": "lf",
+  "prettier.singleQuote": true,
+  "prettier.trailingComma": "all",
+  "prettier.printWidth": 80,
+  "prettier.tabWidth": 2,
+  "prettier.useTabs": false,
+  "prettier.bracketSpacing": true,
+  "prettier.bracketSameLine": false,
+  "prettier.jsxSingleQuote": true,
+  "prettier.arrowParens": "always",
+  "prettier.proseWrap": "preserve",
+  "prettier.requirePragma": false,
+  "prettier.insertPragma": false,
+  "prettier.singleAttributePerLine": true,
+  "prettier.quoteProps": "consistent",
+  "editor.inlineSuggest.enabled": true,
+  "git.autofetch": true,
+  "prettier.semi": true,
+  "prettier.htmlWhitespaceSensitivity": "css",
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}
