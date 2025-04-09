@@ -1,15 +1,8 @@
-import passport from "passport";
-import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 
-import { envConfig } from "./env.config";
-
-type UserProfile = {
-  id: string;
-  email: string;
-  image: string;
-  provider: string;
-  displayName: string;
-};
+import { envConfig } from './env.config';
+import { AuthService } from '../../services/auth.service';
 
 export const passportConfig = () => {
   passport.use(
@@ -18,20 +11,36 @@ export const passportConfig = () => {
         clientID: envConfig.GOOGLE_CLIENT_ID,
         clientSecret: envConfig.GOOGLE_CLIENT_SECRET,
         callbackURL: envConfig.GOOGLE_CALLBACK_URL,
-        scope: ["profile", "email"],
+        scope: ['profile', 'email'],
       },
-      (_accessToken, _refreshToken, profile, callbackFn) => {
-        // TODO - create the user in your database
-        const userProfile: UserProfile = {
-          id: profile.id,
-          provider: profile.provider,
-          displayName: profile.displayName,
-          email: profile._json.email as string,
-          image: profile._json.picture as string,
-        };
+      async (_accessToken, _refreshToken, profile, callbackFn) => {
+        try {
+          // Map Google profile to our standardized social profile
+          const socialProfile = {
+            id: profile.id,
+            email: profile._json.email as string,
+            name: profile.displayName,
+            image: profile._json.picture as string,
+            provider: 'google',
+          };
 
-        return callbackFn(null, userProfile);
-      }
-    )
+          // Process the user through our auth service
+          const { user, token } = await AuthService.handleOAuthUser(
+            socialProfile,
+          );
+
+          // Augment the user object with the token
+          const userWithToken = {
+            ...user,
+            token,
+          };
+
+          return callbackFn(null, userWithToken);
+        } catch (error) {
+          console.error('Google auth error:', error);
+          return callbackFn(error as Error);
+        }
+      },
+    ),
   );
 };

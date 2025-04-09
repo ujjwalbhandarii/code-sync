@@ -1,6 +1,8 @@
 import express from 'express';
 import passport from 'passport';
 
+import { envConfig } from '../utils/config/env.config';
+
 const router = express.Router();
 
 router.post('/login', () => {});
@@ -15,12 +17,31 @@ router.get(
 );
 
 router.get(
-  '/google/callback',
+  '/google/redirect',
   passport.authenticate('google', {
-    failureRedirect: '/login',
+    session: false,
+    failureRedirect: `${envConfig.FRONTEND_URL}/login?error=auth_failed`,
   }),
-  (_, res) => {
-    res.redirect('http://localhost:3001');
+  async (req, res) => {
+    try {
+      const user = req.user as any;
+
+      // The token is already generated in the auth service
+      const token = user.token;
+
+      // Remove sensitive information before sending
+      delete user.password;
+      delete user.token;
+
+      // Redirect to frontend with token
+      // Security note: in production, consider using secure HttpOnly cookies instead
+      res.redirect(`${envConfig.FRONTEND_URL}?token=${token}`);
+    } catch (error) {
+      console.error('Auth redirect error:', error);
+      res.redirect(
+        `${envConfig.FRONTEND_URL}/login?error=authentication_failed`,
+      );
+    }
   },
 );
 

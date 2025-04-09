@@ -6,5 +6,5 @@ export const CORS_CONFIG = {
   credentials: true,
   allowedHeaders: ['*'],
   methods: ['GET', 'POST'],
-  origin: envConfig.CLIENT_URL,
+  origin: envConfig.FRONTEND_URL,
 } as CorsOptions;
